@@ -1,4 +1,5 @@
 using CompanyEmployees.Extensions;
+using Contract;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 
@@ -7,19 +8,24 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddApplicationPart(typeof(CompanyEmployee.Presentation.AssemblyReference).Assembly);
+builder.Services.AddControllers(config =>
+{
+    config.RespectBrowserAcceptHeader = true;
+}).AddXmlDataContractSerializerFormatters().AddApplicationPart(typeof(CompanyEmployee.Presentation.AssemblyReference).Assembly);
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
+var logger = app.Services.GetRequiredService<ILoggerManager>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-    app.UseDeveloperExceptionPage();
+    app.ConfigureExceptonHandler(logger);
 else
     app.UseHsts();
 

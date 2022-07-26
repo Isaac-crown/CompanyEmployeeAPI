@@ -16,7 +16,7 @@ namespace Repository
 
         }
 
-        protected void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new CompanyConfiguration());
             builder.ApplyConfiguration(new EmployeeConfiguration());

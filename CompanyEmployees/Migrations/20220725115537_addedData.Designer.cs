@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,10 @@ using Repository;
 namespace CompanyEmployees.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20220725115537_addedData")]
+    partial class addedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,22 +47,6 @@ namespace CompanyEmployees.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b34"),
-                            Address = "583 Wall Dr. Gwyan Oak, MD 21207",
-                            Country = "USA",
-                            Name = "Microsoft"
-                        },
-                        new
-                        {
-                            Id = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b35"),
-                            Address = "1600 Amphitheatre Parkway Mountain View, CA 94043",
-                            Country = "USA",
-                            Name = "Google"
-                        });
                 });
 
             modelBuilder.Entity("Entities.Models.Employee", b =>
@@ -91,32 +77,6 @@ namespace CompanyEmployees.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b34"),
-                            Age = 26,
-                            CompanyId = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b34"),
-                            Name = "John Doe",
-                            Position = "Software Developer"
-                        },
-                        new
-                        {
-                            Id = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b35"),
-                            Age = 30,
-                            CompanyId = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b34"),
-                            Name = "Jane Doe",
-                            Position = "Software Developer"
-                        },
-                        new
-                        {
-                            Id = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b36"),
-                            Age = 35,
-                            CompanyId = new Guid("d28888e9-2ba9-473a-a40f-e38cb54f9b34"),
-                            Name = "Emmanuel Imion",
-                            Position = "Administration"
-                        });
                 });
 
             modelBuilder.Entity("Entities.Models.Employee", b =>
