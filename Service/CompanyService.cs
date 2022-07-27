@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract;
+using Entities.Exceptions;
 using Entities.Models;
 using Services.Contract;
 using Shared.DataTransferObjects;
@@ -29,6 +30,23 @@ namespace Service
             return companyToReturn;
         }
 
+        public (IEnumerable<CompanyDto> companies, string ids) CreateCompanyCollection(IEnumerable<CompanyForCreationDto> companyCollection)
+        {
+            if (companyCollection is null)
+                throw new CompanyCollectionBadRequest();
+            var companyEntities = _mapper.Map<IEnumerable<Company>>(companyCollection);
+            foreach (var company in companyEntities)
+            {
+                _repository.Company.CreateCompany(company);
+            }
+            _repository.Save();
+            var companyCollectionToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+            var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id));
+            return (companies: companyCollectionToReturn, ids: ids);
+
+
+        }
+
         public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
         {
 
@@ -37,6 +55,19 @@ namespace Service
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
 
             return companiesDto;
+
+        }
+
+        public IEnumerable<CompanyDto> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
+        {
+            if (ids is null)
+                throw new IdParametersBadRequestException();
+            var companyEntities = _repository.Company.GetByIds(ids, trackChanges);
+            if (ids.Count() != companyEntities.Count())
+                throw new CollectionsByIdsBadRequestException();
+            var companyToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+            return companyToReturn;
+
 
         }
 
