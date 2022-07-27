@@ -21,7 +21,7 @@ namespace Repository
             Create(employee);
         }
 
-
+        public void DeleteEmployee(Employee employee) => Delete(employee);
 
 
         public Employee GetEmployee(Guid companyId, Guid id, bool trackChanges) =>
