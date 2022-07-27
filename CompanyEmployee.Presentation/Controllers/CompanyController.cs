@@ -1,4 +1,5 @@
-﻿using Entities.Exceptions;
+﻿using CompanyEmployee.Presentation.ModelBinders;
+using Entities.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contract;
 using Shared.DataTransferObjects;
@@ -43,7 +44,7 @@ namespace CompanyEmployee.Presentation.Controllers
             return CreatedAtRoute("CompanyById", new { id = newCompany.Id }, newCompany);
         }
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
-        public IActionResult GetCompanyCollection(IEnumerable<Guid> ids)
+        public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
         {
             var companies = _service.CompanyService.GetByIds(ids, trackChanges: false);
             return Ok(companies);
