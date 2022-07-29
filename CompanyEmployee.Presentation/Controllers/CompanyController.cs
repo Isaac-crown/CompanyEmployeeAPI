@@ -1,4 +1,5 @@
-﻿using CompanyEmployee.Presentation.ModelBinders;
+﻿using CompanyEmployee.Presentation.ActionFilters;
+using CompanyEmployee.Presentation.ModelBinders;
 using Entities.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contract;
@@ -36,10 +37,10 @@ namespace CompanyEmployee.Presentation.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
-            if (company is null)
-                return BadRequest("CompanyForCreationDto object is null");
+
             var newCompany = await _service.CompanyService.CreateCompanyAsync(company);
             return CreatedAtRoute("CompanyById", new { id = newCompany.Id }, newCompany);
         }
@@ -65,12 +66,10 @@ namespace CompanyEmployee.Presentation.Controllers
 
 
         [HttpPut("{id:guid}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+
         public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         {
-            if (company is null)
-            {
-                return BadRequest("CompanyForUpdateDto object is null");
-            }
 
             await _service.CompanyService.UpdateCompanyAsync(id, company, trackChanges: true);
             return NoContent();
