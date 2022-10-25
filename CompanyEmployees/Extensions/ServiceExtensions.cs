@@ -44,6 +44,11 @@ namespace CompanyEmployees.Extensions
                 config.OutputFormatters.Add(new CsvOutputFormatter());
             });
 
+        public static void AddCustomMediaTypes(this IServiceCollection services)
+        {
+            services.
+        }
+
 
 
     }
