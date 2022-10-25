@@ -1,6 +1,8 @@
 ﻿using CompanyEmployees.Settings;
 using Contract;
 using LoggerService;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service;
@@ -46,7 +48,24 @@ namespace CompanyEmployees.Extensions
 
         public static void AddCustomMediaTypes(this IServiceCollection services)
         {
-            services.
+            services.Configure<MvcOptions>(config =>
+            {
+                var systemTextJsonOutputFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
+
+                if(systemTextJsonOutputFormatter != null)
+                {
+                    systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.hateoas+json");
+                    systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.apiroot+json");
+                }
+
+                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
+
+                if(xmlOutputFormatter != null)
+                {
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.apiroot+xml");
+                }
+            });
         }
 
 
