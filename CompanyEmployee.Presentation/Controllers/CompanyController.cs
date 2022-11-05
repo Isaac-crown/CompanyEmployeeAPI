@@ -19,14 +19,21 @@ namespace CompanyEmployee.Presentation.Controllers
         private readonly IServiceManager _service;
         public CompanyController(IServiceManager service) => _service = service;
 
-        [HttpGet]
+        [HttpGet(Name="GetCompanies")]
+
         public async Task<IActionResult> GetCompanies()
         {
             //throw new Exception("Exception");
             var companies = await _service.CompanyService.GetAllCompaniesAsync(trackChanges: false);
+
             return Ok(companies);
         }
-
+        [HttpOptions]
+        public IActionResult GetCompaniesOptions()
+        {
+            Response.Headers.Add("Allow", "GET,OPTIONS,POST");
+            return Ok();
+        }
         [HttpGet("{id:guid}", Name = "CompanyById")]
         public async Task<IActionResult> GetCompany(Guid id)
         {
@@ -36,7 +43,8 @@ namespace CompanyEmployee.Presentation.Controllers
             return Ok(company);
         }
 
-        [HttpPost]
+        [HttpPost(Name="CreateCompany")]
+
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {

@@ -38,6 +38,7 @@ builder.Services.AddControllers(config =>
 }).AddXmlDataContractSerializerFormatters().AddCustomCSVFormatter().
 AddApplicationPart(typeof(CompanyEmployee.Presentation.AssemblyReference).Assembly);
 builder.Services.AddCustomMediaTypes();
+builder.Services.ConfigureVersioning();
 
 
 

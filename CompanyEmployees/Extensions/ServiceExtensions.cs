@@ -1,8 +1,10 @@
-﻿using CompanyEmployees.Settings;
+﻿using CompanyEmployee.Presentation.Controllers;
+using CompanyEmployees.Settings;
 using Contract;
 using LoggerService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service;
@@ -52,19 +54,34 @@ namespace CompanyEmployees.Extensions
             {
                 var systemTextJsonOutputFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
 
-                if(systemTextJsonOutputFormatter != null)
+                if (systemTextJsonOutputFormatter != null)
                 {
                     systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.hateoas+json");
                     systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.apiroot+json");
+
                 }
 
                 var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
 
-                if(xmlOutputFormatter != null)
+                if (xmlOutputFormatter != null)
                 {
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.hateoas+xml");
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.manny.apiroot+xml");
                 }
+            });
+        }
+        public static void ConfigureVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                options.Conventions.Controller<CompanyController>()
+                        .HasApiVersion(new ApiVersion(1, 0));
+                options.Conventions.Controller<CompanyV2Controller>()
+                        .HasDeprecatedApiVersion(new ApiVersion(2, 0));
             });
         }
 
