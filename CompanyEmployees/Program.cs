@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using CompanyEmployee.Presentation.ActionFilters;
 using CompanyEmployees.Extensions;
 using CompanyEmployees.Utilities;
@@ -30,6 +31,12 @@ builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+builder.Services.ConfigureVersioning();
+builder.Services.ConfigureResponseCaching();
+builder.Services.ConfigureHttpCacheHeaders();
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimitOptions();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers(config =>
 {
     config.RespectBrowserAcceptHeader = true;
@@ -39,19 +46,16 @@ builder.Services.AddControllers(config =>
 }).AddXmlDataContractSerializerFormatters().AddCustomCSVFormatter().
 AddApplicationPart(typeof(CompanyEmployee.Presentation.AssemblyReference).Assembly);
 builder.Services.AddCustomMediaTypes();
-builder.Services.ConfigureVersioning();
-builder.Services.ConfigureResponseCaching();
-builder.Services.ConfigureHttpCacheHeaders();
+
 
 
 
 var app = builder.Build();
 var logger = app.Services.GetRequiredService<ILoggerManager>();
+app.ConfigureExceptonHandler(logger);
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-    app.ConfigureExceptonHandler(logger);
-else
+if (app.Environment.IsProduction())
     app.UseHsts();
 
 app.UseHttpsRedirection();
@@ -60,6 +64,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
+app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();
