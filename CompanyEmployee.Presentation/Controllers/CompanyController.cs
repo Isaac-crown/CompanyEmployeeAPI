@@ -1,6 +1,7 @@
 ﻿using CompanyEmployee.Presentation.ActionFilters;
 using CompanyEmployee.Presentation.ModelBinders;
 using Entities.Exceptions;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contract;
 using Shared.DataTransferObjects;
@@ -14,12 +15,14 @@ namespace CompanyEmployee.Presentation.Controllers
 {
     [Route("api/companies")]
     [ApiController]
+    // [ResponseCache(CacheProfileName = "120SecondsDuration")]
+
     public class CompanyController : ControllerBase
     {
         private readonly IServiceManager _service;
         public CompanyController(IServiceManager service) => _service = service;
 
-        [HttpGet(Name="GetCompanies")]
+        [HttpGet(Name = "GetCompanies")]
 
         public async Task<IActionResult> GetCompanies()
         {
@@ -35,6 +38,10 @@ namespace CompanyEmployee.Presentation.Controllers
             return Ok();
         }
         [HttpGet("{id:guid}", Name = "CompanyById")]
+        // [ResponseCache(Duration = 60)]  
+        [HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 60)]
+        [HttpCacheValidation(MustRevalidate = false)]
+
         public async Task<IActionResult> GetCompany(Guid id)
         {
             var company = await _service.CompanyService.GetCompanyAsync(id, trackChanges: false);
@@ -43,7 +50,7 @@ namespace CompanyEmployee.Presentation.Controllers
             return Ok(company);
         }
 
-        [HttpPost(Name="CreateCompany")]
+        [HttpPost(Name = "CreateCompany")]
 
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
@@ -52,7 +59,7 @@ namespace CompanyEmployee.Presentation.Controllers
             var newCompany = await _service.CompanyService.CreateCompanyAsync(company);
             return CreatedAtRoute("CompanyById", new { id = newCompany.Id }, newCompany);
         }
-        
+
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
         {

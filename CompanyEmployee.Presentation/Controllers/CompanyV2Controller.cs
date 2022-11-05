@@ -7,7 +7,6 @@ using Services.Contract;
 
 namespace CompanyEmployee.Presentation.Controllers
 {
-    [ApiVersion("2.0")]
     [ApiController]
     [Route("api/{v:apiVersion}/[controller]")]
 
