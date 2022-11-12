@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 // Add services to the container.
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
@@ -57,6 +59,8 @@ app.ConfigureExceptonHandler(logger);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsProduction())
     app.UseHsts();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
